@@ -11,7 +11,7 @@ conda activate MeToEnv
 conda install -c conda-forge -c bioconda MeToEnv
 ```
 
-# MeToARGs: Summary of usage and how to use it
+# MeToARGs: How to use it?
 
 MeToARGs stands for '<b>Met</b>agenomes <b>To</b> <b>A</b>ntibiotic <b>R</b>esistance <b>G</b>enes', since this pipeline aims to provide an assembly and annotation of antibiotic resistance genes (ARGs) from your raw metagenomics reads. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) a folder where all the paired metagenomic reads can be found, 2) a databaset to detect ARGs, and 3) an output directory. 
 
