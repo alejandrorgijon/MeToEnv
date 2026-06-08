@@ -7,7 +7,7 @@ This pipeline was developed by [Alejandro Rodríguez-Gijón](https://alejandrorg
 This tool is developed as a conda environment, and must be installed as follows:
 ```
 curl -O https://github.com/alejandrorgijon/MeToEnv/blob/main/MeToEnv.yml
-conda env create -f environment.yml
+conda env create -f MeToEnv.yml
 conda activate MeToEnv
 ```
 
