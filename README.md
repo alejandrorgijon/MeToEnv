@@ -6,9 +6,9 @@ This pipeline was developed by [Alejandro Rodríguez-Gijón](https://alejandrorg
 
 This tool is developed as a conda environment, and must be installed as follows:
 ```
-conda create -n MeToEnv
+curl -O https://github.com/alejandrorgijon/MeToEnv/blob/main/MeToEnv.yml
+conda env create -f environment.yml
 conda activate MeToEnv
-conda install -c conda-forge -c bioconda MeToEnv
 ```
 
 # MeToARGs: How to use it?
