@@ -44,9 +44,9 @@ For large projects, I strongly suggest to run this pipeline as an array. This wi
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
-#SBATCH --mem-per-cpu=100G
+#SBATCH --mem-per-cpu=10G
 #SBATCH --time=7-00:00:00
-#SBATCH --array=1-3%2
+#SBATCH --array=1-7%7
 #SBATCH --output=meto_%A_%a.out
 #SBATCH --error=meto_%A_%a.err
 
