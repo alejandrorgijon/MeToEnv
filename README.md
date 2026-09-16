@@ -80,7 +80,7 @@ MeToParse aims to parse your results from the resulting output from MeToARGs. It
 - <b>Query coverage</b>: What fraction of my metagenomic sequence is covered by the alignment? Query coverage (%) = (alignment length / query sequence length) × 100.
 - <b>Subject coverage</b>: What fraction of the reference ARG is covered by my metagenomic sequence? Subject coverage (%) = (alignment length / subject sequence length) × 100.
 - <b>Identity</b>: How similar are the aligned residues? Identity = (identical residues / alignment length) × 100.
-- <b>E-value</b>: How random is it to find an alignment this good by change? The lower it is, the stronger is the statistical evidence that the alignment is not random.
+- <b>E-value</b>: How random is it to find an alignment this good by chance? The lower the e-value, the stronger is the statistical evidence that the alignment is not random.
 
 By default, the MeToParse will consider "high-confidence candidates" those hits with an e-value ≤ 1e-10; identity ≥ 80%, query coverage ≥ 80%, and subject coverage ≥ 80%.
 If several high-confidence candidate ARGs are listed for the same query sequence, the candidate with highest bitscore will be selected:
