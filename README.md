@@ -10,14 +10,15 @@ So far the environment has the following commands:
 
 This tool is developed as a conda environment, and must be installed as follows:
 ```
-wget https://github.com/alejandrorgijon/MeToEnv/blob/main/MeToEnv.yml
-conda env create -f MeToEnv.yml
+git clone https://github.com/alejandrorgijon/MeToEnv.git
+cd MeToEnv
+mamba env create -f MeToEnv.yml 
 conda activate MeToEnv
 ```
 
 # MeToARGs
 
-MeToARGs stands for '<b>Met</b>agenomes <b>To</b> <b>A</b>ntibiotic <b>R</b>esistance <b>G</b>enes', since this pipeline aims to provide an assembly and annotation of ARGs from raw metagenomics reads. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) a folder where all the paired metagenomic reads can be found, 2) a databaset to detect ARGs, and 3) an output directory. 
+MeToARGs stands for '<b>Met</b>agenomes <b>To</b> <b>A</b>ntibiotic <b>R</b>esistance <b>G</b>enes', since this pipeline aims to provide an assembly and annotation of ARGs from raw metagenomics reads. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) a folder where all the paired metagenomic reads can be found, 2) the MeToEnv environment pre-installed, and 3) an output directory. 
 
 ```
   MeToARGs --reads1 <file> --reads2 <file> --outdir <dir> [options]
@@ -37,10 +38,10 @@ Optional:
 ```
 For example:
 ```
-MeToARGs --reads1 reads1_trimmed.fastq.gz --reads2 reads2_trimmed.fastq.gz --threads 20 --outdir sample_out
+MeToARGs --reads1 reads1_trimmed.fq.gz --reads2 reads2_trimmed.fq.gz --threads 20 --outdir sample_out
 ```
 
-For large projects, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example I used the [CARD database](https://card.mcmaster.ca/) for ARGs inference as follows:
+For large projects, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example:
 ```
 #!/bin/bash
 
