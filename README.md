@@ -45,7 +45,7 @@ For example:
 MeToARGs --reads1 reads1_trimmed.fq.gz --reads2 reads2_trimmed.fq.gz --threads 20 --outdir sample_out
 ```
 
-For large projects, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example:
+For large projects with a large number of samples, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example:
 ```
 #!/bin/bash
 
@@ -68,7 +68,7 @@ conda activate MeToEnv
 cd /directory/where/your/metagenomic/paired/reads/are/located
 
 mkdir -p results
-ls *_R1.trimmed.fastq.gz | sed 's/_R1.trimmed.fastq.gz//' > samples.txt
+ls *_1.fq.gz | sed 's/_1.fq.gz//' > samples.txt
 SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
 
 MeToARGs --reads1 "${SAMPLE}_1.fq.gz" \
