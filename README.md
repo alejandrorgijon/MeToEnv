@@ -21,7 +21,6 @@ conda activate MeToEnv
 MeToARGs stands for '<b>Met</b>agenomes <b>To</b> <b>A</b>ntibiotic <b>R</b>esistance <b>G</b>enes', since this pipeline aims to provide an assembly and annotation of ARGs from raw metagenomics reads. After installation of the environment, you can make the MeToARGs pipeline executable by:
 ```
 chmod +x path/to/your/directory/MeToEnv/scripts/MeToARGs
-
 ```
 This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) a folder where all the paired metagenomic reads can be found, 2) the MeToEnv environment pre-installed, and 3) an output directory.
 ```
