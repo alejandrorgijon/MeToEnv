@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+### Default Values
+THREADS=1
+MIN_LEN=1000
+ALIGNER="DIAMOND"
+
+usage() {
+    echo ""
+    echo "  MeToARGs --reads1 <file> --reads2 <file> --outdir <dir> [options]"
+    echo ""
+    echo "Description:"
+    echo "  Annotates ARGs in raw reads via assembly and gene calling."
+    echo ""
+    echo "Required:"
+    echo "  --reads1      Forward metagenomic reads (.fastq.gz)"
+    echo "  --reads2      Reverse metagenomic reads (.fastq.gz)"
+    echo "  --outdir      Output directory"
+    echo ""
+    echo "Optional:"
+    echo "  --threads     Number of CPU threads (default: 1)"
+    echo "  --min-length  Minimum contig length to annotate in bp (default: 1000)"
+    echo "  --aligner     Tool used during RGI alignment: DIAMOND or BLAST (default: DIAMOND)"
+    echo ""
+    exit 1
+}
+
+# Parsing flags
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --reads1) READ1_FILE="$2"; shift 2 ;;
+        --reads2) READ2_FILE="$2"; shift 2 ;;
+        --threads) THREADS="$2"; shift 2 ;;
+        --min-length) MIN_LEN="$2"; shift 2 ;;
+        --aligner) ALIGNER="$2"; shift 2 ;;
+        --outdir) OUTDIR="$2"; shift 2 ;;
+        *) echo "❌ Unknown option: $1"; usage ;;
+    esac
+done
+
+### Validation
+[[ -z "${READ1_FILE:-}" ]] && { echo "❌ --reads1 is required"; usage; }
+[[ -z "${READ2_FILE:-}" ]] && { echo "❌ --reads2 is required"; usage; }
+[[ -z "${OUTDIR:-}" ]] && { echo "❌ --outdir is required"; usage; }
+
+# Check if input files exist
+[[ ! -f "$READ1_FILE" ]] && { echo "❌ Forward reads not found: $READ1_FILE"; exit 1; }
+[[ ! -f "$READ2_FILE" ]] && { echo "❌ Reverse reads not found: $READ2_FILE"; exit 1; }
+
+### Setup Sample Name and Output Directory
+SAMPLE=$(basename "$READ1_FILE")
+SAMPLE="${SAMPLE%.gz}"
+SAMPLE="${SAMPLE%.fastq}"
+SAMPLE="${SAMPLE%.fq}"
+SAMPLE="${SAMPLE%_R1*}"
+SAMPLE="${SAMPLE%_1}"
+
+SAMPLE_OUT="$OUTDIR/$SAMPLE"
+mkdir -p "$SAMPLE_OUT"
+
+echo "######################################################################"
+echo "Exciting! You are starting the pipeline MeToARGs.sh v1.0 on $(date)"
+echo "MeToARGs: Metagenomes To Antibiotic Resistance Genes"
+echo "Developer: Alejandro Rodríguez-Gijón (MNCN-CSIC, Madrid, Spain)"
+echo "Contact: alejandro.rgijon@gmail.com"
+echo "######################################################################"
+echo ""
+
+###### Step 1. Assembly using metaSPAdes
+echo "🚀 Step 1/3: Running metaSPAdes for sample: $SAMPLE"
+spades.py --meta -1 "$READ1_FILE" -2 "$READ2_FILE" -t "$THREADS" -o "$SAMPLE_OUT/spades_assembly"
+echo "✅ SPAdes assembly completed."
+
+SCAFFOLDS_RAW="$SAMPLE_OUT/spades_assembly/scaffolds.fasta"
+FILTERED_SCAFFOLDS="$SAMPLE_OUT/${SAMPLE}_min${MIN_LEN}bp_scaffolds.fasta"
+
+###### Step 2. Filter Scaffolds by Minimum Length
+echo "🧹 Step 2/3: Filtering scaffolds shorter than ${MIN_LEN} bp."
+if [[ ! -f "$SCAFFOLDS_RAW" ]]; then
+    echo "❌ Scaffolds file not found at $SCAFFOLDS_RAW"
+    exit 1
+fi
+
+awk -v min_len="$MIN_LEN" '
+    BEGIN { RS=">"; ORS="" }
+    NR > 1 {
+        seq = $0; 
+        sub(/^[^\n]*\n/, "", seq); 
+        gsub(/\n/, "", seq);
+        if (length(seq) >= min_len) print ">" $0;
+    }
+' "$SCAFFOLDS_RAW" > "$FILTERED_SCAFFOLDS"
+
+echo "✅ Filtered scaffolds saved to: $FILTERED_SCAFFOLDS"
+
+###### Step 3. ARG Annotation using RGI
+echo "🧬 Step 3/3: Running RGI annotation on scaffolds using $ALIGNER..."
+rgi main \
+    --input_sequence "$FILTERED_SCAFFOLDS" \
+    --output_file "$SAMPLE_OUT/${SAMPLE}_rgi_annotation" \
+    --input_type contig \
+    --alignment_tool "$ALIGNER" \
+    --threads "$THREADS" \
+    --clean
+
+echo "✅ RGI annotation completed."
+
+###### Citation Generator
+CITATIONS_FILE="$SAMPLE_OUT/citations.txt"
+{
+    echo "#############################################"
+    echo "This pipeline leverages tools developed by open-science researchers."
+    echo "Please cite the following publications in your work:"
+    echo "#############################################"
+    echo ""
+    echo "The MeToARGs pipeline:"
+    echo "  Rodríguez-Gijón A. MeToARGs pipeline."
+    echo ""
+    echo "SPAdes (De novo assembly):"
+    echo "  Prjibelski A, et al. 2020. Using SPAdes De Novo Assembler. Curr Protoc Bioinformatics 70(1):e102."
+    echo ""
+    echo "RGI & CARD database (ARG Annotation):"
+    echo "  Alcock BP, et al. 2023. CARD 2023: expanded curation... Nucleic Acids Res 51(D1):D690-D699."
+    echo ""
+    echo "Sequence Aligner ($ALIGNER):"
+    if [[ "$ALIGNER" == "DIAMOND" ]]; then
+        echo "  Buchfink B, et al. 2021. Sensitive protein alignments at tree-of-life scale using DIAMOND. Nat Methods 18:366–368."
+    else
+        echo "  Altschul SF, et al. 1990. Basic local alignment search tool. J Mol Biol 215:403-410."
+    fi
+} > "$CITATIONS_FILE"
+
+echo ""
+echo "######################################################################"
+echo "Done! Citations saved to: $CITATIONS_FILE"
+echo "Thank you for using MeToARGs!"
+echo "######################################################################"
