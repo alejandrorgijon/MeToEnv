@@ -5,10 +5,40 @@ channels:
   - defaults
 dependencies:
   - python=3.11
-  - ca-certificates
-  - openssl
-  - spades=4.2.0
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib-base
+  - seaborn-base
+  - bokeh
+  - dask
+  - distributed
+  - pyarrow
+  - biopython
+  - bamtools
+  - bedtools
+  - blast=2.16
+  - bowtie2=2.5
+  - bwa=0.7
+  - diamond=2.2
+  - entrez-direct
+  - htslib
+  - jellyfish
+  - kma
   - ncbi-datasets-cli
-  - certifi
-  - rgi
-prefix: /mnt/lustre/scratch/nlsas/home/csic/biv/arg/conda_envs/MeToEnv
+  - ncbi-vdb
+  - prodigal
+  - pyrodigal
+  - pyfaidx
+  - pysam
+  - pyvcf3
+  - rgi=6.0
+  - samtools=1.22
+  - spades=4.2
+  - wget
+  - openmpi
+  - psutil
+  - requests
+  - pyyaml
+  - pytest
+  - pip
