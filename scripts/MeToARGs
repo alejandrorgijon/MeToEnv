@@ -103,7 +103,7 @@ rgi main \
     --input_type contig \
     --alignment_tool "$ALIGNER" \
     --threads "$THREADS" \
-    --clean
+    --clean --keep
 
 echo "✅ RGI annotation completed."
 
