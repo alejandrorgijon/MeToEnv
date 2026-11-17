@@ -2,9 +2,10 @@ name: MeToEnv
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   - python=3.11
+  # Data science & visualization
   - numpy
   - pandas
   - scipy
@@ -14,6 +15,7 @@ dependencies:
   - dask
   - distributed
   - pyarrow
+  # Bioinformatics tools (existing)
   - biopython
   - bamtools
   - bedtools
@@ -35,6 +37,14 @@ dependencies:
   - rgi=6.0
   - samtools=1.22
   - spades=4.2
+  # Bioinformatics tools (newly added)
+  - coverm=0.8
+  - fastani=1.34
+  - minimap2=2.31
+  - skani=0.4
+  - starcode=1.4
+  - strobealign=0.20
+  # System & utilities
   - wget
   - openmpi
   - psutil
