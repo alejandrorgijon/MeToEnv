@@ -1,9 +1,10 @@
 # MeToEnv
-MeToEnv stands for '<b>Met</b>agenomes <b>To</b> <b>Env</b>ironment', since this pipeline aims to help you explore microbial communities from metagenomic raw data.
-This pipeline was developed by [Alejandro Rodríguez-Gijón](https://alejandrorgijon.github.io/) as part of the ARGOS project, a Spanish national research project (PID2023-147830NA-I00) awarded in 2024 to [Rafael Laso-Pérez](https://rafaellasoperez.webnode.es/). ARGOS stands for "<b>A</b>ntimicrobial <b>R</b>esistance by meta<b>G</b>enomics <b>O</b>verview in a <b>S</b>ewage system", and particularly focuses on the extant resistome in the wastewaters of Madrid (Spain).
+MeToEnv stands for '<b>Met</b>agenomes <b>To</b> <b>Env</b>ironment', since this tool is a compilation of pipelines that aim to help you exploring microbial communities from metagenomic raw data. This tool was developed by [Alejandro Rodríguez-Gijón](https://alejandrorgijon.github.io/) as part of the ARGOS project, a Spanish national research project (PID2023-147830NA-I00) awarded in 2024 to [Rafael Laso-Pérez](https://rafaellasoperez.webnode.es/). Other important contributors: Lucía Muñoz.
+ARGOS stands for "<b>A</b>ntimicrobial <b>R</b>esistance by meta<b>G</b>enomics <b>O</b>verview in a <b>S</b>ewage system", and particularly focuses on the extant resistome in the wastewaters of Madrid (Spain).
 
 So far the environment has the following pipelines, which are detailed below:
--  MeToARGs: Pipeline to annotate antibiotic resistance genes (ARGs) from raw metagenomics reads via assembly.
+-  MeToARGs: Pipeline to annotate antibiotic resistance genes (ARGs) from raw metagenomic reads via assembly.
+-  MeToGeneAbu: Pipeline to predict gene abundance from raw metagenomic reads.
 
 # Installation
 
@@ -73,3 +74,4 @@ MeToARGs --reads1 "${SAMPLE}_1.fq.gz" \
          --threads $SLURM_CPUS_PER_TASK \
          --outdir "/mnt/netapp1/Store_argos/05_MeToARGs/H2/"
 ```
+# MeToGeneAbu
