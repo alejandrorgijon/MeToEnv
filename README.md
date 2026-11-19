@@ -22,7 +22,7 @@ chmod +x path/to/your/directory/MeToEnv/scripts/MeToARGs
 ```
 
 # MeToARGs
-MeToARGs stands for '<b>Met</b>agenomes <b>To</b> <b>A</b>ntibiotic <b>R</b>esistance <b>G</b>enes', since this pipeline aims to provide an assembly and annotation of ARGs from raw metagenomics reads. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) a folder where all the paired metagenomic reads can be found, 2) the MeToEnv environment pre-installed, and 3) an output directory.
+MeToARGs stands for '<b>Me</b>tagenomes <b>To</b> <b>A</b>ntibiotic <b>R</b>esistance <b>G</b>ene<b>s</b>', since this pipeline aims to provide an assembly and annotation of ARGs from raw metagenomics reads. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) a folder where all the paired metagenomic reads can be found, 2) the MeToEnv environment pre-installed, and 3) an output directory.
 ```
   MeToARGs --reads1 <file> --reads2 <file> --outdir <dir> [options]
 
@@ -44,7 +44,7 @@ For example:
 MeToARGs --reads1 reads1_trimmed.fq.gz --reads2 reads2_trimmed.fq.gz --threads 20 --outdir sample_out
 ```
 
-For large projects with a large number of samples, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example:
+For projects with a large number of samples, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example:
 ```
 #!/bin/bash
 
@@ -76,7 +76,7 @@ MeToARGs --reads1 "${SAMPLE}_1.fq.gz" \
          --outdir "/mnt/netapp1/Store_argos/05_MeToARGs/H2/"
 ```
 # MeToGeneAbu
-MeToGeneAbu stands for '<b>Met</b>agenomes <b>To</b> <b>G</b>ene <b>A</b>bundance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes by MeToARGs, using the software CoverM. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2)a folder where all the paired metagenomic reads can be found a and 3) a folder were all predicted genes can be found 4) an output directory.
+MeToGeneAbu stands for '<b>Me</b>tagenomes <b>To</b> <b>Gene</b> <b>Abu</b>ndance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes by MeToARGs, using the software CoverM. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2)a folder where all the paired metagenomic reads can be found a and 3) a folder were all predicted genes can be found 4) an output directory.
 
 Please note that this function returns abundance values for all the predicted genes, in case you want to filter out only the resistance genes, further parsing is needed. We recommed the R script 'parse_rgi_coverm.R'
 
