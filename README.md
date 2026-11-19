@@ -101,3 +101,4 @@ For example:
 ```
 MeToGeneAbu --reads1 SAMPLE_R1_trimmed.fq.gz --reads2 SAMPLE_R2_trimmed.fq.gz --scaffolds SAMPLE_min1000bp_scaffolds.fasta --genes SAMPLE_min1000bp_scaffolds.fasta.temp.contig.fsa --outdir sample_out
 ```
+For projects with a large number of samples, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example:
