@@ -4,7 +4,7 @@ ARGOS stands for "<b>A</b>ntimicrobial <b>R</b>esistance by meta<b>G</b>enomics 
 
 So far the environment has the following pipelines, which are detailed below:
 -  MeToARGs: Pipeline to annotate antibiotic resistance genes (ARGs) from raw metagenomic reads via assembly.
--  MeToGeneAbu: Pipeline to predict gene abundance from raw metagenomic reads.
+-  MeToGeneAbu: Pipeline to predict gene abundance from raw metagenomic reads and assemblies.
 
 # Installation
 
