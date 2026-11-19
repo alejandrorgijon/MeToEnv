@@ -78,7 +78,7 @@ MeToARGs --reads1 "${SAMPLE}_1.fq.gz" \
 # MeToGeneAbu
 MeToGeneAbu stands for '<b>Me</b>tagenomes <b>To</b> <b>Gene</b> <b>Abu</b>ndance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes by MeToARGs, using the software CoverM. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2)a folder where all the paired metagenomic reads can be found a and 3) a folder were all predicted genes can be found 4) an output directory.
 
-Please note that this function returns abundance values for all the predicted genes, in case you want to filter out only the resistance genes, further parsing is needed. We recommed the R script 'parse_rgi_coverm.R'
+Please note that this function returns abundance values for all the predicted genes, in case you want to filter out only the resistance genes, further parsing is needed. We recommed the R script 'parse_rgi_coverm.R', that can be found in the scripts folder of this github
 
 ```
 MeToGeneAbu --reads1 <file> --reads2 <file> --scaffolds <file> --genes <file> --outdir <dir> [options]
