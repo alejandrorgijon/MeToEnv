@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+### Default Values
+THREADS=1
+METHODS="rpkm tpm"
+CONTIG_END_EXCL=0
+
+usage() {
+    echo ""
+    echo "  MeToAbundance --reads1 <file> --reads2 <file> --scaffolds <file> --genes <file> --outdir <dir> [options]"
+    echo ""
+    echo "Description:"
+    echo "  Calculates the abundance (RPKM and TPM) of all predicted genes using CoverM."
+    echo ""
+    echo "Required:"
+    echo "  --reads1      Forward metagenomic reads (.fq.gz)"
+    echo "  --reads2      Reverse metagenomic reads (.fq.gz)"
+    echo "  --scaffolds   Filtered scaffolds (_min1000bp_scaffolds.fasta)"
+    echo "  --genes       Gene calling FASTA (_min1000bp_scaffolds.fasta.temp.contig.fsa)"
+    echo "  --outdir      Output directory"
+    echo ""
+    echo "Optional:"
+    echo "  --threads     Number of CPU threads (default: 1)"
+    echo "  --methods     CoverM methods, between quotes (default: \"rpkm tpm\")"
+    echo "  --contig-end-exclusion  Bases excluded at contig ends (default: 0)"
+    echo ""
+    exit 1
+}
+
+# Parsing flags
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --reads1) READ1_FILE="$2"; shift 2 ;;
+        --reads2) READ2_FILE="$2"; shift 2 ;;
+        --scaffolds) SCAFFOLDS="$2"; shift 2 ;;
+        --genes) GENES_FASTA="$2"; shift 2 ;;
+        --threads) THREADS="$2"; shift 2 ;;
+        --methods) METHODS="$2"; shift 2 ;;
+        --contig-end-exclusion) CONTIG_END_EXCL="$2"; shift 2 ;;
+        --outdir) OUTDIR="$2"; shift 2 ;;
+        *) echo "❌ Unknown option: $1"; usage ;;
+    esac
+done
+
+### Validation
+[[ -z "${READ1_FILE:-}" ]] && { echo "❌ --reads1 is required"; usage; }
+[[ -z "${READ2_FILE:-}" ]] && { echo "❌ --reads2 is required"; usage; }
+[[ -z "${SCAFFOLDS:-}" ]] && { echo "❌ --scaffolds is required"; usage; }
+[[ -z "${GENES_FASTA:-}" ]] && { echo "❌ --genes is required"; usage; }
+[[ -z "${OUTDIR:-}" ]] && { echo "❌ --outdir is required"; usage; }
+
+# Check if input files exist and are not empty
+[[ ! -s "$READ1_FILE" ]] && { echo "❌ Forward reads not found or empty: $READ1_FILE"; exit 1; }
+[[ ! -s "$READ2_FILE" ]] && { echo "❌ Reverse reads not found or empty: $READ2_FILE"; exit 1; }
+[[ ! -s "$SCAFFOLDS" ]] && { echo "❌ Scaffolds not found or empty: $SCAFFOLDS"; exit 1; }
+[[ ! -s "$GENES_FASTA" ]] && { echo "❌ Genes FASTA not found or empty: $GENES_FASTA"; exit 1; }
+
+### Setup Sample Name and Output Directory
+SAMPLE=$(basename "$READ1_FILE")
+SAMPLE="${SAMPLE%.gz}"
+SAMPLE="${SAMPLE%.fastq}"
+SAMPLE="${SAMPLE%.fq}"
+SAMPLE="${SAMPLE%_R1*}"
+SAMPLE="${SAMPLE%_1}"
+
+SAMPLE_OUT="$OUTDIR/$SAMPLE"
+mkdir -p "$SAMPLE_OUT"
+
+INPUT="$SAMPLE_OUT/${SAMPLE}_genes_headers.txt"
+GFF="$SAMPLE_OUT/${SAMPLE}_genes.gff"
+TSV="$SAMPLE_OUT/${SAMPLE}_genes_cobertura.tsv"
+
+echo "######################################################################"
+echo "Exciting! You are starting the pipeline MeToAbundance.sh v1.0 on $(date)"
+echo "MeToAbundance: Metagenomes To gene Abundance"
+echo "Developer: Alejandro Rodríguez-Gijón (MNCN-CSIC, Madrid, Spain)"
+echo "Contact: alejandro.rgijon@gmail.com"
+echo "######################################################################"
+echo ""
+
+# Important: check the CoverM version, it must support the --gff option
+coverm --version
+
+###### Step 1. Convert gene headers to GFF
+echo "Step 1/2: Building GFF for sample: $SAMPLE"
+
+# Extract the fasta headers
+grep '>' "$GENES_FASTA" > "$INPUT"
+
+# Convert the headers to gff
+echo "##gff-version 3" > "$GFF"
+
+awk -F' # ' 'BEGIN{OFS="\t"}
+/^>/ {
+    gsub(/\r/, "")
+    gene = substr($1, 2)
+    contig = gene
+    sub(/_[0-9]+$/, "", contig)
+    strand = ($4 == "-1") ? "-" : "+"
+    attr = $5
+    sub(/^;+/, "", attr)
+    if (attr !~ /(^|;)ID=/) attr = "ID=" gene ((attr != "") ? ";" attr : "")
+    print contig, "RGI", "CDS", $2, $3, ".", strand, ".", attr
+}' "$INPUT" >> "$GFF"
+
+echo " GFF created: $GFF"
+
+###### Step 2. Gene abundance using CoverM
+echo " Step 2/2: Running CoverM (methods: $METHODS)..."
+read -r -a METHODS_ARR <<< "$METHODS"
+
+coverm contig \
+    -r "$SCAFFOLDS" \
+    -1 "$READ1_FILE" \
+    -2 "$READ2_FILE" \
+    --gff "$GFF" \
+    --methods "${METHODS_ARR[@]}" \
+    --contig-end-exclusion "$CONTIG_END_EXCL" \
+    --threads "$THREADS" \
+    -o "$TSV"
+
+echo " CoverM completed: $TSV"
+
+###### Citation Generator
+CITATIONS_FILE="$SAMPLE_OUT/citations.txt"
+{
+    echo "#############################################"
+    echo "This pipeline leverages tools developed by open-science researchers."
+    echo "Please cite the following publications in your work:"
+    echo "#############################################"
+    echo ""
+    echo "The MeToAbundance pipeline:"
+    echo "  Rodríguez-Gijón A. MeToAbundance pipeline."
+    echo ""
+    echo "Samuel T N Aroney, Rhys J P Newell, Jakob N Nissen, Antonio Pedro Camargo, Gene W Tyson, Ben J Woodcroft, CoverM: read alignment statistics for metagenomics, Bioinformatics, Volume 41, Issue 4, April 2025"
+} > "$CITATIONS_FILE"
+
+echo ""
+echo "######################################################################"
+echo "Done! Results saved to: $TSV"
+echo "Citations saved to: $CITATIONS_FILE"
+echo "Thank you for using MeToAbundance!"
+echo "######################################################################"
