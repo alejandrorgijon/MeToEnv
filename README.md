@@ -93,3 +93,8 @@ Description:
             --threads     Number of CPU threads (default: 1)
             --methods     CoverM methods, between quotes (default: rpkm, tpm)
             --contig-end-exclusion  Bases excluded at contig ends (default: 0)
+```
+For example:
+```
+MeToAbu --reads1 SAMPLE_R1_trimmed.fq.gz --reads2 SAMPLE_R2_trimmed.fq.gz --scaffolds SAMPLE_min1000bp_scaffolds.fasta --genes SAMPLE_min1000bp_scaffolds.fasta.temp.contig.fsa --outdir sample_out
+```
