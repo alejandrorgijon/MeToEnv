@@ -1,11 +1,12 @@
 # MeToEnv
-MeToEnv stands for '<b>Met</b>agenomes <b>To</b> <b>Env</b>ironment', since this tool is a compilation of pipelines that aim to help you exploring microbial communities from metagenomic raw data. This tool was developed by [Alejandro Rodríguez-Gijón](https://alejandrorgijon.github.io/) as part of the ARGOS project, a Spanish national research project (PID2023-147830NA-I00) awarded in 2024 to [Rafael Laso-Pérez](https://rafaellasoperez.webnode.es/). Other important contributors: Lucía Muñoz.
+MeToEnv stands for '<b>Met</b>agenomes <b>To</b> <b>Env</b>ironment', since this tool is a compilation of pipelines that aim to help you exploring microbial communities from metagenomic raw data. This tool was developed by [Alejandro Rodríguez-Gijón](https://alejandrorgijon.github.io/) as part of the ARGOS project, a Spanish national research project (PID2023-147830NA-I00) awarded in 2024 to [Rafael Laso-Pérez](https://rafaellasoperez.webnode.es/). 
 ARGOS stands for "<b>A</b>ntimicrobial <b>R</b>esistance by meta<b>G</b>enomics <b>O</b>verview in a <b>S</b>ewage system", and particularly focuses on the extant resistome in the wastewaters of Madrid (Spain).
 
 So far the environment has the following pipelines, which are detailed below:
 -  MeToARGs: Pipeline to annotate antibiotic resistance genes (ARGs) from raw metagenomic reads via assembly.
 -  MeToGeneAbu: Pipeline to predict gene abundance from raw metagenomic reads and assemblies.
 
+Other important contributors: [Lucía Muñoz](https://github.com/Lucia-Munoz)
 # Installation
 
 This tool is developed as a conda environment, and must be installed as follows:
