@@ -64,21 +64,34 @@ module purge
 module load cesga/system miniconda3/22.11.1-1
 conda activate MeToEnv
 
-cd /directory/where/your/metagenomic/paired/reads/are/located
+DATA_DIR="/mnt/netapp1/Store_argos/01_data/E_extra3"
+OUT_DIR="/mnt/netapp1/Store_argos/05_MeToARGs/E_extra3"
 
-mkdir -p results
-ls *_1.fq.gz | sed 's/_1.fq.gz//' > samples.txt
-SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
+cd "$DATA_DIR" || exit 1
 
-MeToARGs --reads1 "${SAMPLE}_1.fq.gz" \
+mkdir -p "$OUT_DIR"
+ls *_1.fq.gz | sed 's/_1.fq.gz//' > samples_E_extra3.txt
+SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples_E_extra3.txt)
+
+/home/csic/biv/rlp/MeToEnv/scripts/MeToARGs \
+         --reads1 "${SAMPLE}_1.fq.gz" \
          --reads2 "${SAMPLE}_2.fq.gz" \
          --threads $SLURM_CPUS_PER_TASK \
-         --outdir "/mnt/netapp1/Store_argos/05_MeToARGs/H2/"
+         --memory 320 \
+         --outdir "$OUT_DIR"
+
+SAMPLE_OUT="${OUT_DIR}/${SAMPLE}"
+
+if [ -d "$SAMPLE_OUT" ]; then
+    rm -rf "${SAMPLE_OUT}/spades_assembly/assembly_graph"*
+    rm -rf "${SAMPLE_OUT}/spades_assembly/K"*
+    rm -rf "${SAMPLE_OUT}/spades_assembly/corrected"
+fi
 ```
 # MeToGeneAbu
-MeToGeneAbu stands for '<b>Me</b>tagenomes <b>To</b> <b>Gene</b> <b>Abu</b>ndance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes by MeToARGs, using the software CoverM. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools. As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2)a folder where all the paired metagenomic reads can be found a and 3) a folder were all predicted genes can be found 4) an output directory.
+MeToGeneAbu stands for '<b>Me</b>tagenomes <b>To</b> <b>Gene</b> <b>Abu</b>ndance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes after metagenome prcessing in MeToARGs.. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools such as [CoverM](https://github.com/wwood/CoverM). As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2) a folder where all the paired metagenomic reads can be found, 3) a folder with the assemblies, 4) a folder with the gene predictions, and 4) an output directory.
 
-Please note that this function returns abundance values for all the predicted genes, in case you want to filter out only the resistance genes, further parsing is needed. We recommed the R script 'parse_rgi_coverm.R', that can be found in the scripts folder of this github
+Note that this function returns abundance values for all the predicted genes. If you want to filter only the resistance genes, further parsing is needed. We recommed the R script 'parse_rgi_coverm.R', that can be found in the scripts folder.
 
 ```
 MeToGeneAbu --reads1 <file> --reads2 <file> --scaffolds <file> --genes <file> --outdir <dir> [options]
@@ -92,7 +105,7 @@ Description:
             --genes       Gene calling FASTA (_min1000bp_scaffolds.fasta.temp.contig.fsa)
             --outdir      Output directory
 
-  Optional (change these as you see fit):
+  Optional (change as desired):
             --threads     Number of CPU threads (default: 1)
             --methods     CoverM methods, between quotes (default: rpkm, tpm)
             --contig-end-exclusion  Bases excluded at contig ends (default: 0)
@@ -101,4 +114,35 @@ For example:
 ```
 MeToGeneAbu --reads1 SAMPLE_R1_trimmed.fq.gz --reads2 SAMPLE_R2_trimmed.fq.gz --scaffolds SAMPLE_min1000bp_scaffolds.fasta --genes SAMPLE_min1000bp_scaffolds.fasta.temp.contig.fsa --outdir sample_out
 ```
-For projects with a large number of samples, I strongly suggest to run this pipeline as an array. This will allow to send multiple jobs, one per paired metagenomic reads. For example:
+For projects with a large number of samples, I strongly suggest to run this pipeline as loop. For example:
+```
+module load cesga/2025 miniconda3/26.1.1-1
+conda activate MeToEnv
+
+cd /path/to/working/directory
+
+READS_DIR="../01_data/metagenomes"
+SCAFFOLDS_DIR="scaffolds"
+GENES_DIR="genes_test"
+
+for r1 in "${READS_DIR}"/*_1.fq.gz; do
+    sample=$(basename "$r1" "_1.fq.gz")
+
+    r2="${READS_DIR}/${sample}_2.fq.gz"
+    scaffolds="${SCAFFOLDS_DIR}/${sample}_min1000bp_scaffolds.fasta"
+    genes="${GENES_DIR}/${sample}_min1000bp_scaffolds.fasta.temp.contig.fsa"
+
+    if [[ -f "$r2" && -f "$scaffolds" && -f "$genes" ]]; then
+        ./MeToGeneAbu.sh \
+            --reads1 "$r1" \
+            --reads2 "$r2" \
+            --scaffolds "$scaffolds" \
+            --genes "$genes" \
+            --threads 40 \
+            --outdir .
+    else
+        echo "WARNING: Missing matching files for sample '$sample'. Skipping..."
+    fi
+done
+```
+
