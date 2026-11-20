@@ -64,14 +64,14 @@ module purge
 module load cesga/system miniconda3/22.11.1-1
 conda activate MeToEnv
 
-DATA_DIR="/mnt/netapp1/Store_argos/01_data/E_extra3"
-OUT_DIR="/mnt/netapp1/Store_argos/05_MeToARGs/E_extra3"
+DATA_DIR="/mnt/netapp1/Store_argos/01_data/metagenomes"
+OUT_DIR="/mnt/netapp1/Store_argos/05_MeToARGs/metagenomes"
 
 cd "$DATA_DIR" || exit 1
 
 mkdir -p "$OUT_DIR"
-ls *_1.fq.gz | sed 's/_1.fq.gz//' > samples_E_extra3.txt
-SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples_E_extra3.txt)
+ls *_1.fq.gz | sed 's/_1.fq.gz//' > samples_metagenomes.txt
+SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples_metagenomes.txt)
 
 /home/csic/biv/rlp/MeToEnv/scripts/MeToARGs \
          --reads1 "${SAMPLE}_1.fq.gz" \
@@ -81,12 +81,6 @@ SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples_E_extra3.txt)
          --outdir "$OUT_DIR"
 
 SAMPLE_OUT="${OUT_DIR}/${SAMPLE}"
-
-if [ -d "$SAMPLE_OUT" ]; then
-    rm -rf "${SAMPLE_OUT}/spades_assembly/assembly_graph"*
-    rm -rf "${SAMPLE_OUT}/spades_assembly/K"*
-    rm -rf "${SAMPLE_OUT}/spades_assembly/corrected"
-fi
 ```
 # MeToGeneAbu
 MeToGeneAbu stands for '<b>Me</b>tagenomes <b>To</b> <b>Gene</b> <b>Abu</b>ndance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes after metagenome prcessing in MeToARGs.. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools such as [CoverM](https://github.com/wwood/CoverM). As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2) a folder where all the paired metagenomic reads can be found, 3) a folder with the assemblies, 4) a folder with the gene predictions, and 4) an output directory.
@@ -105,7 +99,7 @@ Description:
             --genes       Gene calling FASTA (_min1000bp_scaffolds.fasta.temp.contig.fsa)
             --outdir      Output directory
 
-  Optional (change as desired):
+  Optional:
             --threads     Number of CPU threads (default: 1)
             --methods     CoverM methods, between quotes (default: rpkm, tpm)
             --contig-end-exclusion  Bases excluded at contig ends (default: 0)
@@ -116,6 +110,18 @@ MeToGeneAbu --reads1 SAMPLE_R1_trimmed.fq.gz --reads2 SAMPLE_R2_trimmed.fq.gz --
 ```
 For projects with a large number of samples, I strongly suggest to run this pipeline as loop. For example:
 ```
+#!/bin/bash
+
+#SBATCH --job-name=MeToGeneAbu
+#SBATCH --nodes=1
+#SBATCH -c 40
+#SBATCH --mem 200G
+#SBATCH --time=1-00:00:00
+#SBATCH --output=test_MeToGeneAbu.out
+#SBATCH --error=metagenomes_MeToGeneAbu.err
+
+#######
+
 module load cesga/2025 miniconda3/26.1.1-1
 conda activate MeToEnv
 
