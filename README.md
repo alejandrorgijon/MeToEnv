@@ -6,7 +6,7 @@ So far the environment has the following pipelines, which are detailed below:
 -  MeToARGs: Pipeline to annotate antibiotic resistance genes (ARGs) from raw metagenomic reads via assembly.
 -  MeToGeneAbu: Pipeline to predict gene abundance from raw metagenomic reads and assemblies.
 
-Other important contributors: [Lucía Muñoz](https://github.com/Lucia-Munoz)
+Other important contributors: [Lucía Muñoz](https://github.com/Lucia-Munoz).
 # Installation
 
 This tool is developed as a conda environment, and must be installed as follows:
