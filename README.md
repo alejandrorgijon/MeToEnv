@@ -92,6 +92,7 @@ MeToGeneAbu --reads1 <file> --reads2 <file> --scaffolds <file> --genes <file> --
 
 Description:
   Calculates the abundance (RPKM and TPM) of all predicted genes using CoverM.
+
   Required:
             --reads1      Forward metagenomic reads (.fq.gz)
             --reads2      Reverse metagenomic reads (.fq.gz)
