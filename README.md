@@ -83,7 +83,7 @@ SAMPLE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples_metagenomes.txt)
 SAMPLE_OUT="${OUT_DIR}/${SAMPLE}"
 ```
 # MeToGeneAbu
-MeToGeneAbu stands for '<b>Me</b>tagenomes <b>To</b> <b>Gene</b> <b>Abu</b>ndance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes after metagenome prcessing in MeToARGs.. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools such as [CoverM](https://github.com/wwood/CoverM). As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2) a folder where all the paired metagenomic reads can be found, 3) a folder with the assemblies, 4) a folder with the gene predictions, and 5) an output directory.
+MeToGeneAbu stands for '<b>Me</b>tagenomes <b>To</b> <b>Gene</b> <b>Abu</b>ndance', since this pipeline aims to provide abundance metrics (RPKM & RPM by default) for all the predicted genes after metagenome prcessing in MeToARGs. This pipeline was develop to be user-friendly at all levels of bioinformatic expertise and leverages already existing tools such as [CoverM](https://github.com/wwood/CoverM). As a user, you will only need the following files: 1) the MeToEnv environment pre-installed, 2) a folder where all the paired metagenomic reads can be found, 3) a folder with the assemblies, 4) a folder with the gene predictions, and 5) an output directory.
 
 ```
 MeToGeneAbu --reads1 <file> --reads2 <file> --scaffolds <file> --genes <file> --outdir <dir> [options]
@@ -107,7 +107,7 @@ For example:
 ```
 MeToGeneAbu --reads1 SAMPLE_R1_trimmed.fq.gz --reads2 SAMPLE_R2_trimmed.fq.gz --scaffolds SAMPLE_min1000bp_scaffolds.fasta --genes SAMPLE_min1000bp_scaffolds.fasta.temp.contig.fsa --outdir sample_out
 ```
-Note that this function returns abundance values for all the predicted genes. If you want to filter only the resistance genes, further parsing is needed. We recommed the R script 'parse_rgi_coverm.R', that can be found in the scripts folder. Furthermore, for projects with a large number of samples, I strongly suggest to run this pipeline as loop. For example:
+Note that this function returns abundance values for all the predicted genes. If you want to filter only the resistance genes, further parsing is needed. We provide an R script named 'parse_rgi_coverm.R', that can be found in the scripts folder, to help in this task. Furthermore, for projects with a large number of samples, we strongly suggest to run this pipeline as a loop. For example:
 ```
 #!/bin/bash
 
